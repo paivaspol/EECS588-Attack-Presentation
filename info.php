@@ -1,3 +1,35 @@
+<?php
+  $db = new SQLite3("twitter-vulnerable.db");
+  $userId = null;
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST["action"])) {
+      // check for login credentials and send a session cookie.
+      if ($_POST["action"] == "login" && isset($_POST["userId"]) && isset($_POST["password"])) {
+        $statement = $db->prepare("SELECT * FROM User WHERE userId=:id AND password=:password");
+        $statement->bindValue(":id", $_POST["userId"], SQLITE3_TEXT);
+        $statement->bindValue(":password", $_POST["password"], SQLITE3_TEXT);
+        $results = $statement->execute();
+        if (count($results) > 0) {
+          $userId = $results->fetchArray()["userId"];
+        } else {
+          die("The user name and password combination doesn't work.");
+        }
+      } elseif ($_POST["action"] == "tweet" && isset($_POST["userId"]) && isset($_POST["tweet"])) {
+        $queryString = "INSERT INTO Tweet VALUES(\"" . $_POST["userId"] . "\", \"" . $_POST["tweet"] . "\")";
+        $db->exec($queryString);
+        $userId = $_POST["userId"];
+      } else {
+        die("The user name and password combination doesn't work.");
+      }
+    }
+  } elseif ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if (isset($_GET["userId"])) {
+      $userId = $_GET["userId"];
+    }
+  } else {
+    die("BOOM!");
+  }
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -16,27 +48,36 @@
   </head>
   <body>
     <div class="container">
-      <form action="" class="form-inline">
+      <?php
+        $statement = $db->prepare("SELECT * FROM User WHERE UserId = :id");
+        $statement->bindValue(":id", $userId, SQLITE3_TEXT);
+        $results = $statement->execute();
+        while ($row = $results->fetchArray()) {
+      ?>
+        <h1><?= $row["displayName"] ?></h1>
+      <?php
+        }
+      ?>
+      <form action="" class="form-inline" method="post">
         <div class="form-group">
           <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
+          <input type="hidden" name="userId" value="<?= $userId ?>">
+          <input type="hidden" name="action" value="tweet">
         </div>
         <button type="submit" class="btn btn-success">Tweet</button>
       </form>
       <div class="tweet-display col-md-12">
         <?php
-
+          $statement = $db->prepare("SELECT * FROM Tweet WHERE UserId = :id");
+          $statement->bindValue(":id", $userId, SQLITE3_TEXT);
+          $results = $statement->execute();
+          while ($row = $results->fetchArray()) {
         ?>
         <div class="row tweet">
-          <?php
-            if (isset($_GET["tweet"])) {
-          ?>
-          <?= $_GET["tweet"] ?>
-          <?php
-            }
-          ?>
+          <?= $row["tweet"] ?>
         </div>
         <?php
-
+          }
         ?>
       </div>
     </div>
