@@ -14,10 +14,6 @@
         } else {
           die("The user name and password combination doesn't work.");
         }
-      } elseif ($_POST["action"] == "tweet" && isset($_POST["userId"]) && isset($_POST["tweet"])) {
-        $queryString = "INSERT INTO Tweet VALUES(\"" . $_POST["userId"] . "\", \"" . $_POST["tweet"] . "\")";
-        $db->exec($queryString);
-        $userId = $_POST["userId"];
       } else {
         die("The user name and password combination doesn't work.");
       }
@@ -58,7 +54,7 @@
       <?php
         }
       ?>
-      <form action="" class="form-inline" method="post">
+      <form target="transFrame" action="tweet.php" class="form-inline" method="post">
         <div class="form-group">
           <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
           <input type="hidden" name="userId" value="<?= $userId ?>">
@@ -66,6 +62,7 @@
         </div>
         <button type="submit" class="btn btn-success">Tweet</button>
       </form>
+      <iframe style="display: none;" name="transFrame" id="transFrame"></iframe>
       <div class="tweet-display col-md-12">
         <?php
           $statement = $db->prepare("SELECT * FROM Tweet WHERE UserId = :id");
