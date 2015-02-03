@@ -71,7 +71,7 @@
               $row = $results->fetchArray();
               $followerDisplayName = $row["displayName"];
           ?>
-            <li><a href="info.php?userId=<?= $follower ?>"><?= $followerDisplayName ?></a></li>
+            <li><a href="profile.php?userId=<?= $follower ?>"><?= $followerDisplayName ?></a></li>
           <?php
             }
           ?>

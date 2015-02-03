@@ -17,7 +17,7 @@
   <body>
     <div class="container">
       <h1>Login</h1>
-      <form action="info.php" class="form-inline" method="post" action="info.php">
+      <form class="form-inline" method="post" action="profile.php">
         <div class="form-group row">
           <input class="form-control" type="text" name="userId" placeholder="Enter your username">
           <input class="form-control" type="password" name="password" placeholder="Enter your password">
