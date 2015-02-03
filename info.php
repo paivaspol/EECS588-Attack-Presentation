@@ -85,7 +85,7 @@
         </div>
         <button type="submit" class="btn btn-success">Tweet</button>
       </form>
-      <div class="tweet-display">
+      <div class="col-md-5 tweet-display">
         <?php
           $statement = $db->prepare("SELECT * FROM Tweet WHERE UserId = :id");
           $statement->bindValue(":id", $userId, SQLITE3_TEXT);
