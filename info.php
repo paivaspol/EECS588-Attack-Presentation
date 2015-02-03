@@ -44,16 +44,39 @@
   </head>
   <body>
     <div class="container">
+      <h1>Twitter - EECS 588</h1>
       <?php
         $statement = $db->prepare("SELECT * FROM User WHERE UserId = :id");
         $statement->bindValue(":id", $userId, SQLITE3_TEXT);
         $results = $statement->execute();
         while ($row = $results->fetchArray()) {
       ?>
-        <h1><?= $row["displayName"] ?></h1>
+        <h2><?= $row["displayName"] ?></h2>
       <?php
         }
       ?>
+      <div class="pull-right">
+        <h4>Followers</h4>
+        <ul class="list-unstyled">
+          <?php
+            $statement = $db->prepare("SELECT followers FROM User WHERE UserId = :id");
+            $statement->bindValue(":id", $userId, SQLITE3_TEXT);
+            $results = $statement->execute();
+            $row = $results->fetchArray();
+            $splitted = explode(",", $row["followers"]);
+            foreach ($splitted as $follower) {
+              $statement = $db->prepare("SELECT displayName FROM User WHERE UserId = :id");
+              $statement->bindValue(":id", $follower);
+              $results = $statement->execute();
+              $row = $results->fetchArray();
+              $followerDisplayName = $row["displayName"];
+          ?>
+            <li><a href="info.php?userId=<?= $follower ?>"><?= $followerDisplayName ?></a></li>
+          <?php
+            }
+          ?>
+        </ul>
+      </div>
       <form target="transFrame" action="tweet.php" class="form-inline" method="post">
         <div class="form-group">
           <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
@@ -62,8 +85,7 @@
         </div>
         <button type="submit" class="btn btn-success">Tweet</button>
       </form>
-      <iframe style="display: none;" name="transFrame" id="transFrame"></iframe>
-      <div class="tweet-display col-md-12">
+      <div class="tweet-display">
         <?php
           $statement = $db->prepare("SELECT * FROM Tweet WHERE UserId = :id");
           $statement->bindValue(":id", $userId, SQLITE3_TEXT);
@@ -77,6 +99,7 @@
           }
         ?>
       </div>
+      <iframe style="display: none;" name="transFrame" id="transFrame"></iframe>
     </div>
   </body>
 </html>
