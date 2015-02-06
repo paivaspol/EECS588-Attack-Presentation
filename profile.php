@@ -1,6 +1,8 @@
 <?php
   $db = new SQLite3("twitter-vulnerable.db");
   $userId = null;
+  // Date of expiry for one month
+  $date_of_expiry = time() + 60 * 60 * 24 * 30;
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["action"])) {
       // check for login credentials and send a session cookie.
@@ -17,6 +19,7 @@
       } else {
         die("The user name and password combination doesn't work.");
       }
+      setcookie("userloggedin", $_POST["userId"], $date_of_expiry, "/");
     }
   } elseif ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET["userId"])) {
