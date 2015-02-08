@@ -1,10 +1,10 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if ($_POST["action"] == "tweet" && isset($_POST["userId"]) && isset($_POST["tweet"])) {
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+  if (isset($_GET["userId"]) && isset($_GET["tweet"])) {
     $db = new SQLite3("twitter-vulnerable.db");
-    $queryString = "INSERT INTO Tweet VALUES(\"" . $_POST["userId"] . "\", \"" . $_POST["tweet"] . "\")";
+    $queryString = "INSERT INTO Tweet VALUES(\"" . $_GET["userId"] . "\", \"" . $_GET["tweet"] . "\")";
     $db->exec($queryString);
-    $userId = $_POST["userId"];
+    $userId = $_GET["userId"];
   }
 }
 ?>

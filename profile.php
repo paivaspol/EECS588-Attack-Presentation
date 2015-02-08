@@ -96,11 +96,10 @@
           ?>
         </ul>
       </div>
-      <form target="transFrame" action="tweet.php" class="form-inline" method="post">
+      <form target="transFrame" action="tweet.php" class="form-inline" method="get">
         <div class="form-group">
           <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
           <input type="hidden" name="userId" value="<?= $userId ?>">
-          <input type="hidden" name="action" value="tweet">
         </div>
         <button type="submit" class="btn btn-success">Tweet</button>
       </form>
