@@ -5,5 +5,6 @@ BEGIN TRANSACTION;
     INSERT INTO "User" VALUES('eugene','eugene','Eugene','');
     INSERT INTO "User" VALUES('magic','magic','Magic','');
     INSERT INTO "User" VALUES('jhalderm', 'jhalderm', 'Alex Halderman', '');
+    INSERT INTO "User" VALUES('vaspol', 'vaspol', 'Vaspol', '');
     INSERT INTO "Tweet" VALUES('jhalderm', 'EECS588 is fun!');
     COMMIT;
