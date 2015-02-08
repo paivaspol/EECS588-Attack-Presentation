@@ -1,6 +1,8 @@
 <?php
   $db = new SQLite3("twitter-vulnerable.db");
   $userId = null;
+  $loggedInUserId = null;
+
   // Date of expiry for one month
   $date_of_expiry = time() + 60 * 60 * 24 * 30;
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,7 +14,7 @@
         $statement->bindValue(":password", $_POST["password"], SQLITE3_TEXT);
         $results = $statement->execute();
         if (count($results) > 0) {
-          $userId = $results->fetchArray()["userId"];
+          $loggedInUserId = $results->fetchArray()["userId"];
         } else {
           die("The user name and password combination doesn't work.");
         }
@@ -21,12 +23,25 @@
       }
       setcookie("userloggedin", $_POST["userId"], $date_of_expiry, "/");
     }
-  } elseif ($_SERVER["REQUEST_METHOD"] == "GET") {
+  }
+
+  if (isset($_COOKIE["userloggedin"]) && $loggedInUserId == null) {
+    $loggedInUserId = $_COOKIE["userloggedin"];
+  }
+
+  if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET["userId"])) {
       $userId = $_GET["userId"];
     }
-  } else {
-    die("BOOM!");
+  }
+
+  if ($userId == null) {
+    $userId = $loggedInUserId;
+  }
+
+  if ($loggedInUserId == null) {
+    header('Location: login.php');
+    die();
   }
 ?>
 <!DOCTYPE html>
@@ -48,6 +63,7 @@
   <body>
     <div class="container">
       <h1>Twitter - EECS 588</h1>
+      <h3>Viewing as <?= $loggedInUserId ?></h3>
       <?php
         $statement = $db->prepare("SELECT * FROM User WHERE UserId = :id");
         $statement->bindValue(":id", $userId, SQLITE3_TEXT);
