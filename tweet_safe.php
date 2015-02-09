@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $db = new SQLite3("twitter-vulnerable.db");
     $statement = $db->prepare("INSERT INTO Tweet VALUES(:userId, :tweet)");
     $statement->bindValue(":userId", $_GET["userId"], SQLITE3_TEXT);
-    $statement->bindValue(":tweet", $_GET["tweet"], SQLITE3_TEXT);
+    $statement->bindValue(":tweet", htmlspecialchars($_GET["tweet"]), SQLITE3_TEXT);
     $statement->execute();
     $userId = $_GET["userId"];
   }
