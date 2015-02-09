@@ -55,6 +55,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="style.css">
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
@@ -62,62 +63,70 @@
   </head>
   <body>
     <div class="container">
-      <h1>Twitter - EECS 588</h1>
-      <h3>Viewing as <?= $loggedInUserId ?></h3>
+      <h1>Twitter - EECS 588 - logged in as <?= $loggedInUserId ?></h1>
       <?php
         $statement = $db->prepare("SELECT * FROM User WHERE UserId = :id");
         $statement->bindValue(":id", $userId, SQLITE3_TEXT);
         $results = $statement->execute();
         while ($row = $results->fetchArray()) {
       ?>
-        <h2><?= $row["displayName"] ?></h2>
+        <h2><?= $row["displayName"] ?> (<?= $row["userId"] ?>)'s Profile</h2>
       <?php
         }
       ?>
-      <div class="pull-right">
-        <h4>Followers</h4>
-        <ul class="list-unstyled">
-          <?php
-            $statement = $db->prepare("SELECT followers FROM User WHERE UserId = :id");
-            $statement->bindValue(":id", $userId, SQLITE3_TEXT);
-            $results = $statement->execute();
-            $row = $results->fetchArray();
-            $splitted = explode(",", $row["followers"]);
-            foreach ($splitted as $follower) {
-              $statement = $db->prepare("SELECT displayName FROM User WHERE UserId = :id");
-              $statement->bindValue(":id", $follower);
+      <div class="tweet-textbox">
+        <div class="pull-right">
+          <h4>Followers</h4>
+          <ul class="list-unstyled">
+            <?php
+              $statement = $db->prepare("SELECT followers FROM User WHERE UserId = :id");
+              $statement->bindValue(":id", $userId, SQLITE3_TEXT);
               $results = $statement->execute();
               $row = $results->fetchArray();
-              $followerDisplayName = $row["displayName"];
-          ?>
-            <li><a href="profile.php?userId=<?= $follower ?>"><?= $followerDisplayName ?></a></li>
+              $splitted = explode(",", $row["followers"]);
+              foreach ($splitted as $follower) {
+                $statement = $db->prepare("SELECT displayName FROM User WHERE UserId = :id");
+                $statement->bindValue(":id", $follower);
+                $results = $statement->execute();
+                $row = $results->fetchArray();
+                $followerDisplayName = $row["displayName"];
+            ?>
+              <li><a href="profile.php?userId=<?= $follower ?>"><?= $followerDisplayName ?></a></li>
+            <?php
+              }
+            ?>
+          </ul>
+        </div>
+        <div class="col-md-8">
+          <form target="transFrame" action="tweet.php" class="form-inline" method="get">
+            <div class="form-group">
+              <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
+            </div>
+            <input type="hidden" name="userId" value="<?= $userId ?>">
+            <button type="submit" class="btn btn-success">Tweet</button>
+          </form>
+        </div>
+        <div class="clearfix"></div>
+        <h3>Tweets</h3>
+        <div class="col-md-5 tweet-display">
           <?php
+            $statement = $db->prepare("SELECT * FROM Tweet WHERE UserId = :id");
+            $statement->bindValue(":id", $userId, SQLITE3_TEXT);
+            $results = $statement->execute();
+            $counter = 1;
+            while ($row = $results->fetchArray()) {
+          ?>
+          <div class="row tweet">
+            <span class="text-muted">#<?= $counter ?></span>
+            <?= $row["tweet"] ?>
+          </div>
+          <?php
+            $counter++;
             }
           ?>
-        </ul>
-      </div>
-      <form target="transFrame" action="tweet.php" class="form-inline" method="get">
-        <div class="form-group">
-          <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
-          <input type="hidden" name="userId" value="<?= $userId ?>">
         </div>
-        <button type="submit" class="btn btn-success">Tweet</button>
-      </form>
-      <div class="col-md-5 tweet-display">
-        <?php
-          $statement = $db->prepare("SELECT * FROM Tweet WHERE UserId = :id");
-          $statement->bindValue(":id", $userId, SQLITE3_TEXT);
-          $results = $statement->execute();
-          while ($row = $results->fetchArray()) {
-        ?>
-        <div class="row tweet">
-          <?= $row["tweet"] ?>
-        </div>
-        <?php
-          }
-        ?>
+        <iframe style="display: none;" name="transFrame" id="transFrame"></iframe>
       </div>
-      <iframe style="display: none;" name="transFrame" id="transFrame"></iframe>
     </div>
   </body>
 </html>
