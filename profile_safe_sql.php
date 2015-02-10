@@ -98,7 +98,7 @@
           </ul>
         </div>
         <div class="col-md-8">
-          <form target="transFrame" action="tweet_safe.php" method="get">
+          <form target="transFrame" action="tweet_safe_sql.php" method="get">
             <div class="form-group">
               <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
             </div>
