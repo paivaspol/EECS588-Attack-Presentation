@@ -106,7 +106,7 @@
               <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
             </div>
             <input type="hidden" name="userId" value="<?= $userId ?>">
-            <input type=’hidden’ name=’csrfToken’ value='<?php echo($_SESSION[‘csrfTOken’]) ?>' /> 
+            <input type="hidden" name="csrfToken" value="<?php echo($_SESSION["csrfToken"]) ?>" /> 
             <button type="submit" class="btn btn-success">Tweet</button>
           </form>
         </div>
