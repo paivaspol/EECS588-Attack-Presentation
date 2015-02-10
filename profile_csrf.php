@@ -2,7 +2,6 @@
   $db = new SQLite3("twitter-vulnerable.db");
   $userId = null;
   $loggedInUserId = null;
-  $randomtoken = base64_encode( openssl_random_pseudo_bytes(32));
 
   // Date of expiry for one month
   $date_of_expiry = time() + 60 * 60 * 24 * 30;
@@ -22,13 +21,17 @@
       } else {
         die("The user name and password combination doesn't work.");
       }
+      session_start();
       setcookie("userloggedin", $_POST["userId"], $date_of_expiry, "/");
+      $randomtoken = base64_encode( openssl_random_pseudo_bytes(32));
       $_SESSION['csrfToken'] = $randomtoken;
     }
   }
 
   if (isset($_COOKIE["userloggedin"]) && $loggedInUserId == null) {
+    session_start();
     $loggedInUserId = $_COOKIE["userloggedin"];
+    $randomtoken = base64_encode( openssl_random_pseudo_bytes(32));
     $_SESSION['csrfToken'] = $randomtoken;
   }
 
@@ -101,7 +104,7 @@
           </ul>
         </div>
         <div class="col-md-8">
-          <form target="transFrame" action="tweet.php" method="get">
+          <form target="transFrame" action="tweet_csrf.php" method="get">
             <div class="form-group">
               <input type="text" class="form-control" name="tweet" placeholder="What's on your mind?">
             </div>
